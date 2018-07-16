@@ -9,6 +9,9 @@ sites=(
 	#http://www.anothersite.com
 )
 
+# path to logfile
+logfile=/var/log/cron.uptime.log
+
 for i in ${sites[@]}; do
 	# uses curl to make http request and save the status code to a variable
 	status=$(curl -o /dev/null -u root:root -Isw '%{http_code}' ${i})
@@ -22,3 +25,15 @@ for i in ${sites[@]}; do
 		echo "Subject: ${i} down!" | /usr/sbin/sendmail your@email.com
 	fi
 done
+
+# get the current size of the logfile
+logfilesize=$(wc -c <"$logfile")
+
+# if our log file is getting large, cycle it
+if [ $logfilesize -ge $logfilemax ]; then
+	# get the current date
+	date=`date '+%Y%m%d-%H.%M.%S'`
+
+	# rename (move) the log file
+	mv "$logfile" "$logfile"-"$date"
+fi
