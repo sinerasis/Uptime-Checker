@@ -9,6 +9,11 @@ sites=(
 	#http://www.anothersite.com
 )
 
+#notification addresses (array)
+notify=(
+	#sample@email.com
+)
+
 # path to logfile
 logfile=/var/log/cron.uptime.log
 
@@ -21,8 +26,10 @@ for i in ${sites[@]}; do
 
 	# check the status code to see if it's 200, send an email if not
 	if [ ${status} -ne "200" ]; then
-		# full path of binary must be used because cron has a limited PATH!
-		echo "Subject: ${i} down!" | /usr/sbin/sendmail your@email.com
+		# send email to each notification address, full path of binary must be used because cron has a limited PATH!
+		for email in ${notify}; do
+			echo "Subject: ${i} alert!" | /usr/sbin/sendmail ${email}
+		done
 	fi
 done
 
