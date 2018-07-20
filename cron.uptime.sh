@@ -17,6 +17,9 @@ notify=(
 # path to logfile
 logfile=/var/log/cron.uptime.log
 
+# maximum size of log file, in bytes
+logfilemax=500000
+
 for i in ${sites[@]}; do
 	# uses curl to make http request and save the status code to a variable
 	status=$(curl -o /dev/null -u root:root -Isw '%{http_code}' ${i})
